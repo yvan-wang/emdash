@@ -1,0 +1,123 @@
+---
+// 文章详情页布局
+import Base from './Base.astro';
+import Toc from '../components/Toc.astro';
+import { PortableText } from 'emdash/ui';
+
+interface Props {
+  title: string;
+  excerpt?: string;
+  publishedAt?: string;
+  categories?: any[];
+  tags?: any[];
+  featuredImage?: any;
+  showToc?: boolean;
+  content: any[];
+}
+
+const { 
+  title, 
+  excerpt, 
+  publishedAt, 
+  categories = [], 
+  tags = [], 
+  featuredImage,
+  showToc = true,
+  content 
+} = Astro.props;
+
+const formatDate = (date: string) => {
+  if (!date) return '';
+  return new Date(date).toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+---
+
+<Base title={title} description={excerpt} sidebar={false}>
+  <article class="max-w-3xl mx-auto">
+    <!-- 文章头部 -->
+    <header class="mb-8">
+      <!-- 分类 -->
+      {categories.length > 0 && (
+        <div class="mb-4">
+          {categories.map((cat: any) => (
+            <a 
+              href={`/categories/${cat.slug}`} 
+              class="inline-block bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full hover:bg-blue-200 transition-colors"
+            >
+              {cat.label}
+            </a>
+          ))}
+        </div>
+      )}
+      
+      <!-- 标题 -->
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{title}</h1>
+      
+      <!-- 摘要 -->
+      {excerpt && (
+        <p class="text-lg text-gray-600 mb-4">{excerpt}</p>
+      )}
+      
+      <!-- 元信息 -->
+      <div class="flex items-center text-sm text-gray-500 gap-4">
+        {publishedAt && (
+          <time datetime={publishedAt}>
+            📅 {formatDate(publishedAt)}
+          </time>
+        )}
+        <span>⏱️ 阅读约 {Math.ceil(content.reduce((acc: number, block: any) => {
+          if (block._type === 'block' && block.children) {
+            return acc + block.children.reduce((sum: number, child: any) => 
+              sum + (child.text?.length || 0), 0);
+          }
+          return acc;
+        }, 0) / 500)} 分钟</span>
+      </div>
+    </header>
+    
+    <!-- 封面图 -->
+    {featuredImage?.src && (
+      <figure class="mb-8">
+        <img 
+          src={featuredImage.src} 
+          alt={featuredImage.alt || title}
+          class="w-full rounded-xl shadow-lg"
+        />
+        {featuredImage.alt && (
+          <figcaption class="text-center text-sm text-gray-500 mt-2">
+            {featuredImage.alt}
+          </figcaption>
+        )}
+      </figure>
+    )}
+    
+    <!-- 目录 -->
+    {showToc && <Toc content={content} />}
+    
+    <!-- 文章内容 -->
+    <div class="prose max-w-none">
+      <PortableText value={content} />
+    </div>
+    
+    <!-- 标签 -->
+    {tags.length > 0 && (
+      <footer class="mt-8 pt-6 border-t border-gray-200">
+        <div class="flex flex-wrap gap-2">
+          <span class="text-gray-600 mr-2">标签：</span>
+          {tags.map((tag: any) => (
+            <a 
+              href={`/tags/${tag.slug}`}
+              class="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-gray-200 transition-colors"
+            >
+              #{tag.label}
+            </a>
+          ))}
+        </div>
+      </footer>
+    )}
+  </article>
+</Base>

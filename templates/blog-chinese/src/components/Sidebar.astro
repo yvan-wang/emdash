@@ -1,0 +1,80 @@
+---
+import { getEmDashCollection, getTerm } from 'emdash';
+
+// 获取最近文章
+const { entries: recentPosts } = await getEmDashCollection('posts', {
+  where: { status: 'published' },
+  orderBy: { publishedAt: 'desc' },
+  limit: 5,
+});
+
+// 获取分类
+const categories = await getTerm('categories', '');
+---
+
+<aside class="w-full md:w-72 shrink-0">
+  <div class="sticky top-24 space-y-6">
+    <!-- 搜索 -->
+    <div class="bg-gray-50 rounded-xl p-4">
+      <h3 class="text-sm font-semibold text-gray-900 mb-3">🔍 搜索</h3>
+      <form action="/search" method="get">
+        <input 
+          type="search" 
+          name="q"
+          placeholder="搜索文章..."
+          class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors text-sm"
+        />
+      </form>
+    </div>
+    
+    <!-- 最近文章 -->
+    {recentPosts.length > 0 && (
+      <div class="bg-gray-50 rounded-xl p-4">
+        <h3 class="text-sm font-semibold text-gray-900 mb-3">📝 最近文章</h3>
+        <ul class="space-y-2">
+          {recentPosts.map((post: any) => (
+            <li>
+              <a 
+                href={`/posts/${post.slug}`}
+                class="text-sm text-gray-600 hover:text-blue-600 transition-colors line-clamp-2"
+              >
+                {post.data.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+    
+    <!-- 分类 -->
+    <div class="bg-gray-50 rounded-xl p-4">
+      <h3 class="text-sm font-semibold text-gray-900 mb-3">📂 分类</h3>
+      <ul class="space-y-1">
+        <li>
+          <a href="/posts" class="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+            全部文章
+          </a>
+        </li>
+        {/* 如果有分类数据，这里可以遍历显示 */}
+      </ul>
+    </div>
+    
+    <!-- 关于 -->
+    <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4">
+      <h3 class="text-sm font-semibold text-gray-900 mb-2">🔮 关于器灵</h3>
+      <p class="text-sm text-gray-600">
+        70 = 器灵<br/>
+        每个工具都有灵魂
+      </p>
+    </div>
+  </div>
+</aside>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

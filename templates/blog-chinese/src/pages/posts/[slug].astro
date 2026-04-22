@@ -1,0 +1,27 @@
+---
+import { getEmDashEntry, getEntryTerms } from 'emdash';
+import { PortableText } from 'emdash/ui';
+import PostLayout from '../layouts/Post.astro';
+
+const { slug } = Astro.params;
+const { entry: post } = await getEmDashEntry('posts', slug!);
+
+if (!post) {
+  return Astro.redirect('/404');
+}
+
+// 获取分类和标签
+const categories = await getEntryTerms('posts', post.id, 'categories');
+const tags = await getEntryTerms('posts', post.id, 'tags');
+---
+
+<PostLayout 
+  title={post.data.title}
+  excerpt={post.data.excerpt}
+  publishedAt={post.publishedAt}
+  categories={categories}
+  tags={tags}
+  featuredImage={post.data.featured_image}
+  showToc={post.data.toc !== false}
+  content={post.data.content}
+/>

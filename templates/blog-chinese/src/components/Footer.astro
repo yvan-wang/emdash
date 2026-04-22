@@ -1,0 +1,60 @@
+---
+import { getSiteSettings, getMenu } from 'emdash';
+
+const settings = await getSiteSettings();
+const footerMenu = await getMenu('footer');
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-gray-50 border-t border-gray-100 mt-16">
+  <div class="container mx-auto px-4 py-12 max-w-6xl">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- 关于 -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          🔮 {settings?.title || '器灵博客'}
+        </h3>
+        <p class="text-gray-600 text-sm leading-relaxed">
+          {settings?.description || '每个工具都有灵魂'}
+        </p>
+        <p class="text-gray-500 text-sm mt-2">
+          70 = 器灵 | io70.com
+        </p>
+      </div>
+      
+      <!-- 链接 -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">快速链接</h3>
+        {footerMenu?.items?.length > 0 && (
+          <ul class="space-y-2">
+            {footerMenu.items.map((item: any) => (
+              <li>
+                <a 
+                  href={item.url}
+                  class="text-gray-600 hover:text-blue-600 transition-colors text-sm"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      
+      <!-- 版权 -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">关于本站</h3>
+        <p class="text-gray-600 text-sm">
+          基于 EmDash 构建<br/>
+          部署于 Cloudflare
+        </p>
+      </div>
+    </div>
+    
+    <div class="border-t border-gray-200 mt-8 pt-8 text-center">
+      <p class="text-gray-500 text-sm">
+        © {currentYear} {settings?.title || '器灵博客'}. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,77 @@
+---
+import { getTerm, getEntriesByTerm } from 'emdash';
+import Base from '../../layouts/Base.astro';
+
+const { slug } = Astro.params;
+const category = await getTerm('categories', slug!);
+
+if (!category) {
+  return Astro.redirect('/404');
+}
+
+const posts = await getEntriesByTerm('posts', 'categories', slug!);
+
+const formatDate = (date: string) => {
+  if (!date) return '';
+  return new Date(date).toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+---
+
+<Base title={`分类：${category.label}`} sidebar={false}>
+  <section class="max-w-3xl mx-auto">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+        <a href="/posts" class="hover:text-blue-600">全部文章</a>
+        <span>/</span>
+        <span>{category.label}</span>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900">
+        📂 {category.label}
+      </h1>
+      <p class="text-gray-600 mt-2">共 {posts.length} 篇文章</p>
+    </header>
+    
+    {posts.length > 0 ? (
+      <div class="space-y-4">
+        {posts.map((post: any) => (
+          <article class="p-4 bg-white rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all">
+            <a href={`/posts/${post.slug}`} class="block">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-1">
+                  <h2 class="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                    {post.data.title}
+                  </h2>
+                  {post.data.excerpt && (
+                    <p class="text-sm text-gray-600 mt-1 line-clamp-1">
+                      {post.data.excerpt}
+                    </p>
+                  )}
+                </div>
+                <time class="text-sm text-gray-500 shrink-0">
+                  {formatDate(post.publishedAt)}
+                </time>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-12 text-gray-500">
+        <p>该分类下暂无文章</p>
+      </div>
+    )}
+  </section>
+</Base>
+
+<style>
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

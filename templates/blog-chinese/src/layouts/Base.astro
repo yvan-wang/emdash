@@ -1,0 +1,114 @@
+---
+// 基础布局组件
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Sidebar from '../components/Sidebar.astro';
+import { getSiteSettings, getMenu } from 'emdash';
+
+interface Props {
+  title: string;
+  description?: string;
+  sidebar?: boolean;
+}
+
+const { title, description, sidebar = true } = Astro.props;
+const settings = await getSiteSettings();
+const primaryMenu = await getMenu('primary');
+
+const siteTitle = settings?.title || '器灵博客';
+const siteDescription = settings?.description || '每个工具都有灵魂';
+const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description || siteDescription} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+  </head>
+  <body class="min-h-screen bg-white text-gray-800 antialiased">
+    <Header title={siteTitle} menu={primaryMenu} />
+    
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
+      <div class={sidebar ? "flex flex-col md:flex-row gap-8" : ""}>
+        <article class={sidebar ? "flex-1 min-w-0" : "w-full max-w-3xl mx-auto"}>
+          <slot />
+        </article>
+        {sidebar && <Sidebar />}
+      </div>
+    </main>
+    
+    <Footer />
+  </body>
+</html>
+
+<style is:global>
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+  
+  /* 文章内容样式 */
+  .prose {
+    @apply text-gray-700 leading-relaxed;
+  }
+  
+  .prose h1 {
+    @apply text-3xl font-bold text-gray-900 mb-6 mt-8 first:mt-0;
+  }
+  
+  .prose h2 {
+    @apply text-2xl font-semibold text-gray-900 mb-4 mt-8;
+  }
+  
+  .prose h3 {
+    @apply text-xl font-semibold text-gray-900 mb-3 mt-6;
+  }
+  
+  .prose p {
+    @apply mb-4;
+  }
+  
+  .prose a {
+    @apply text-blue-600 hover:text-blue-800 underline;
+  }
+  
+  .prose ul, .prose ol {
+    @apply pl-6 mb-4;
+  }
+  
+  .prose ul {
+    @apply list-disc;
+  }
+  
+  .prose ol {
+    @apply list-decimal;
+  }
+  
+  .prose li {
+    @apply mb-2;
+  }
+  
+  .prose code {
+    @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono;
+  }
+  
+  .prose pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4;
+  }
+  
+  .prose pre code {
+    @apply bg-transparent p-0;
+  }
+  
+  .prose blockquote {
+    @apply border-l-4 border-blue-500 pl-4 italic text-gray-600 my-4;
+  }
+  
+  .prose img {
+    @apply rounded-lg max-w-full h-auto my-6;
+  }
+</style>

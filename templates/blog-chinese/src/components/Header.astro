@@ -1,0 +1,75 @@
+---
+import { getSiteSettings, getMenu } from 'emdash';
+
+interface Props {
+  title: string;
+  menu?: any;
+}
+
+const { title, menu } = Astro.props;
+const settings = await getSiteSettings();
+---
+
+<header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+  <nav class="container mx-auto px-4 h-16 flex items-center justify-between max-w-6xl">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+      <span class="text-2xl">🔮</span>
+      <span>{title}</span>
+    </a>
+    
+    <!-- 导航菜单 -->
+    {menu?.items?.length > 0 && (
+      <ul class="hidden md:flex items-center gap-6">
+        {menu.items.map((item: any) => (
+          <li>
+            <a 
+              href={item.url} 
+              class="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+    
+    <!-- 移动端菜单按钮 -->
+    <button 
+      id="menu-toggle"
+      class="md:hidden p-2 text-gray-600 hover:text-gray-900"
+      aria-label="菜单"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </nav>
+  
+  <!-- 移动端菜单 -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
+    {menu?.items?.length > 0 && (
+      <ul class="container mx-auto px-4 py-4 space-y-3">
+        {menu.items.map((item: any) => (
+          <li>
+            <a 
+              href={item.url} 
+              class="block text-gray-600 hover:text-blue-600 transition-colors py-2"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  
+  toggle?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>

@@ -1,0 +1,60 @@
+---
+// 目录组件
+interface Props {
+  content: any[];
+}
+
+const { content } = Astro.props;
+
+// 从内容中提取标题
+const headings = content
+  .filter((block: any) => 
+    block._type === 'block' && 
+    ['h1', 'h2', 'h3'].includes(block.style)
+  )
+  .map((block: any) => {
+    const text = block.children?.map((c: any) => c.text).join('') || '';
+    const slug = text.toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\u4e00-\u9fa5-]/g, '');
+    return {
+      level: parseInt(block.style.replace('h', '')),
+      text,
+      slug,
+    };
+  });
+
+if (headings.length < 2) {
+  // 少于2个标题不显示目录
+  return null;
+}
+---
+
+<nav class="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-100">
+  <details class="group">
+    <summary class="flex items-center justify-between cursor-pointer list-none">
+      <h2 class="text-sm font-semibold text-gray-900">📑 目录</h2>
+      <svg 
+        class="w-4 h-4 text-gray-500 group-open:rotate-180 transition-transform" 
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </summary>
+    
+    <ul class="mt-3 space-y-1">
+      {headings.map((heading: any) => (
+        <li class={heading.level === 1 ? '' : heading.level === 2 ? 'ml-3' : 'ml-6'}>
+          <a 
+            href={`#${heading.slug}`}
+            class="text-sm text-gray-600 hover:text-blue-600 transition-colors block py-0.5"
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </details>
+</nav>

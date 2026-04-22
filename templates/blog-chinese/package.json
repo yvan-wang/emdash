@@ -1,0 +1,28 @@
+{
+  "name": "@qiling/emdash-theme-blog",
+  "version": "1.0.0",
+  "description": "一个简洁优雅的中文博客主题，基于 EmDash 构建",
+  "keywords": ["astro-template", "emdash", "blog", "chinese", "中文", "博客"],
+  "emdash": {
+    "label": "器灵博客",
+    "description": "简洁优雅的中文博客主题，适合个人写作和知识分享",
+    "seed": ".emdash/seed.json",
+    "preview": "https://io70.com"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.0.0",
+    "@astrojs/check": "^0.9.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}
